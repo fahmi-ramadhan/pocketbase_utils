@@ -65,7 +65,8 @@ final class Collection {
         /// We override the "email" field to a non-nullable one in case when
         /// the schema has both "email" and "emailVisibility" fields set to "required"
         /// because otherwise it can be hidden from the API response or be null.
-        final isEmailFieldInSchemaRequired = fields.firstWhereOrNull((e) => e.name == 'email')?.required == true &&
+        final isEmailFieldInSchemaRequired =
+            fields.firstWhereOrNull((e) => e.name == 'email')?.required == true &&
             fields.firstWhereOrNull((e) => e.name == 'emailVisibility')?.required == true;
 
         if (isEmailFieldInSchemaRequired) {
@@ -102,15 +103,19 @@ final class Collection {
               ..name = 'nameInSchema'
               ..modifier = code_builder.FieldModifier.final$
               ..type = code_builder.refer('String'),
-          )
+          ),
         ])
         ..constructors.add(
           code_builder.Constructor(
             (co) => co
               ..constant = true
-              ..requiredParameters.add(code_builder.Parameter((p) => p
-                ..toThis = true
-                ..name = 'nameInSchema')),
+              ..requiredParameters.add(
+                code_builder.Parameter(
+                  (p) => p
+                    ..toThis = true
+                    ..name = 'nameInSchema',
+                ),
+              ),
           ),
         )
         ..values.addAll([
@@ -132,8 +137,9 @@ final class Collection {
     );
 
     final enumSelectValuesCode = [
-      for (final field
-          in allFieldsWithoutHidden.where((f) => f.type == FieldType.select && f.values?.isNotEmpty == true))
+      for (final field in allFieldsWithoutHidden.where(
+        (f) => f.type == FieldType.select && f.values?.isNotEmpty == true,
+      ))
         code_builder.Enum(
           (e) => e
             ..name = field.enumTypeName(className)
@@ -143,28 +149,39 @@ final class Collection {
                   ..name = 'nameInSchema'
                   ..modifier = code_builder.FieldModifier.final$
                   ..type = code_builder.refer('String'),
-              )
+              ),
             ])
             ..constructors.add(
               code_builder.Constructor(
                 (co) => co
                   ..constant = true
-                  ..requiredParameters.add(code_builder.Parameter((p) => p
-                    ..toThis = true
-                    ..name = 'nameInSchema')),
+                  ..requiredParameters.add(
+                    code_builder.Parameter(
+                      (p) => p
+                        ..toThis = true
+                        ..name = 'nameInSchema',
+                    ),
+                  ),
               ),
             )
             ..values.addAll([
               if (field.values != null)
                 for (final value in field.values!)
-                  code_builder.EnumValue((ev) => ev
-                    ..name = ReCase(value).camelCase
-                    ..arguments.add(code_builder.literalString(value))
-                    ..annotations.add(
-                      code_builder
-                          .refer('JsonValue', 'package:json_annotation/json_annotation.dart')
-                          .newInstance([code_builder.literalString(value)]),
-                    )),
+                  code_builder.EnumValue((ev) {
+                    final name = double.tryParse(value) != null
+                        ? 'v$value'
+                        : value == '-'
+                        ? 'none'
+                        : ReCase(value).camelCase;
+                    ev
+                      ..name = name
+                      ..arguments.add(code_builder.literalString(value))
+                      ..annotations.add(
+                        code_builder.refer('JsonValue', 'package:json_annotation/json_annotation.dart').newInstance([
+                          code_builder.literalString(value),
+                        ]),
+                      );
+                  }),
             ]),
         ),
     ];
@@ -174,8 +191,9 @@ final class Collection {
         ..name = className
         ..extend = extend
         ..modifier = code_builder.ClassModifier.final$
-        ..annotations
-            .add(code_builder.refer('JsonSerializable', 'package:json_annotation/json_annotation.dart').newInstance([]))
+        ..annotations.add(
+          code_builder.refer('JsonSerializable', 'package:json_annotation/json_annotation.dart').newInstance([]),
+        )
         ..fields.addAll([
           for (final field in fieldsWithoutSuperFieldsAndHidden) ...[
             field.toCodeBuilder(
@@ -190,13 +208,11 @@ final class Collection {
                 ..name = '\$$staticCollectionRefFieldName'
                 ..static = true
                 ..modifier = code_builder.FieldModifier.constant
-                ..assignment = code_builder
-                    .literalString(switch (staticCollectionRefFieldName) {
-                      'collectionName' => name,
-                      'collectionId' => id,
-                      _ => '',
-                    })
-                    .code,
+                ..assignment = code_builder.literalString(switch (staticCollectionRefFieldName) {
+                  'collectionName' => name,
+                  'collectionId' => id,
+                  _ => '',
+                }).code,
             ),
         ])
         ..constructors.addAll([

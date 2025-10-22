@@ -69,7 +69,13 @@ final class Field {
 
   final String? docs;
 
-  String get nameInCamelCase => ReCase(name).camelCase;
+  String get nameInCamelCase {
+    final nameInCamelCase = ReCase(name).camelCase;
+    if (dartKeywords.contains(nameInCamelCase)) {
+      return '${nameInCamelCase}Field';
+    }
+    return nameInCamelCase;
+  }
 
   Map<String, dynamic> toJson() => _$FieldToJson(this);
 
@@ -165,6 +171,74 @@ final class Field {
     ];
   }
 }
+
+const dartKeywords = {
+  'abstract',
+  'as',
+  'assert',
+  'async',
+  'await',
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'covariant',
+  'default',
+  'deferred',
+  'do',
+  'dynamic',
+  'else',
+  'enum',
+  'export',
+  'extends',
+  'extension',
+  'external',
+  'factory',
+  'false',
+  'final',
+  'finally',
+  'for',
+  'Function',
+  'get',
+  'hide',
+  'if',
+  'implements',
+  'import',
+  'in',
+  'interface',
+  'is',
+  'late',
+  'library',
+  'mixin',
+  'native',
+  'new',
+  'null',
+  'on',
+  'operator',
+  'part',
+  'patch',
+  'required',
+  'rethrow',
+  'return',
+  'set',
+  'show',
+  'static',
+  'super',
+  'switch',
+  'sync',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'typedef',
+  'var',
+  'void',
+  'while',
+  'with',
+  'yield',
+};
 
 const baseFields = [
   Field(
