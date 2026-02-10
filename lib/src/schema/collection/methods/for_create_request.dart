@@ -41,7 +41,7 @@ code_builder.Method _forCreateRequestMethod(String className, Iterable<Field> al
                 for (final baseField in baseFields)
                   baseField.nameInCamelCase: switch (baseField.nameInCamelCase) {
                     'id' => code_builder.literalString(''),
-                    'created' || 'updated' => code_builder.refer('EmptyDateTime', 'empty_values.dart').newInstance([]),
+                    'created' || 'updated' || 'created_at' || 'updated_at' => code_builder.refer('EmptyDateTime', 'empty_values.dart').newInstance([]),
                     'collectionId' || 'collectionName' => code_builder.refer('\$${baseField.nameInCamelCase}'),
                     _ => code_builder.refer(baseField.nameInCamelCase),
                   },
